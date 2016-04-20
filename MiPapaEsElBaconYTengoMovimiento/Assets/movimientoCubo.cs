@@ -9,20 +9,35 @@ public class movimientoCubo : MonoBehaviour {
    // public float desplazamientoRI = 0;
     public float giroI = 1f;
     public float giroD = 1f;
-   // private float pos_anterior, pos_actual;
-    public GameObject eje;
-
+   	private float pos_anterior, pos_actual;
+    public GameObject robotMalo = new GameObject();
+    public bool move = false, r_malo = false, already_modif = false;
+    private Vector3 modif;
+    //private bool hide = false;
 
     // Use this for initialization
-    void Start () {
+    void Start () 
+    {
        /* velocidadDespzamiento = 40;
-        velocidadGiro = 1f;
-        pos_actual = pos_anterior = this.transform.position.x;*/
-
+        velocidadGiro = 1f;*/
+        if(!move)
+        	robotMalo.GetComponent<TrailRenderer>().enabled=false; 
+        pos_anterior = this.transform.position.z;
+        modif = new Vector3();
     }
 	
 	// Update is called once per frame
-	void FixedUpdate () {
+	void Update () 
+	{
+		pos_actual = this.transform.position.z;
+		if(move && pos_actual-pos_anterior >= 40 && !r_malo && !already_modif)
+		{
+	    	modif.x = 100;
+	    	modif.z = 100;
+	    	modif.y = robotMalo.transform.position.y;
+	    	robotMalo.transform.position = modif;
+	    	mover_malo();
+    	}
         //if (Input.GetKey(KeyCode.UpArrow)){
         //    this.transform.Translate(Vector3.forward * velocidadDespzamiento * Time.deltaTime);
         //    desplazamientoRD++;
@@ -56,11 +71,29 @@ public class movimientoCubo : MonoBehaviour {
             //transform.RotateAround(GameObject.Find("ruedaIzquierdaMalo").transform.position, Vector3.up, -giroI * velocidadGiro);
             //transform.RotateAround(GameObject.Find("ruedaDerechaMalo").transform.position, Vector3.up, giroD * velocidadGiro);
        // }
+		//
+    }
+    void mover_malo()
+    {
+    	robotMalo.GetComponent<movimientoCubo>().move = true;
+    	robotMalo.GetComponent<TrailRenderer>().enabled=true; 
+    	already_modif =  true;
     }
     void OnCollisionStay()
     {
-        this.transform.Translate(Vector3.forward * 1f * Time.deltaTime);
-        this.transform.Translate(Vector3.right * giroD * Time.deltaTime);
-        this.transform.Translate(Vector3.left * giroI * Time.deltaTime);
+
+
+    	if(move && !robotMalo.GetComponent<movimientoCubo>().move)
+    	{
+	        this.transform.Translate(Vector3.forward * 1f * Time.deltaTime);
+	        this.transform.Translate(Vector3.right * giroD * Time.deltaTime);
+	        this.transform.Translate(Vector3.left * giroI * Time.deltaTime);
+	    }
+	    else if(move && robotMalo.GetComponent<movimientoCubo>().move)
+	    {
+	    	this.transform.Translate(Vector3.forward * 1f * Time.deltaTime);
+	        this.transform.Translate(Vector3.right * giroD * Time.deltaTime);
+	        this.transform.Translate(Vector3.left * giroI * Time.deltaTime);
+	    }
     }
 }
